@@ -25,8 +25,20 @@ const equipment = [
     {id:3, name:'คีย์บอร์ด', category:'accessory'},
 ]
 
+app.get("/api/equipment/:id",(req,res)=>{
+    const id = Number(req.params.id);
+    const result = equipment.find(e=>e.id==id)
+    if (result) {
+        res.status(200).json(result)
+    } else {
+        res.status(404).json({message:"ไม่พบข้อมูล"})
+    }
+})
+
 app.get("/api/equipment",(req,res) => {
-    res.status(200).json(equipment);
+    const cat = req.query.category;
+    const result = cat?equipment.filter(e=>e.category===cat):equipment;
+    res.status(200).json(result);
 })
 
 app.get("/api/equipment/getNum", (req, res) => {
