@@ -135,6 +135,77 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "เกิดข้อผิดพลาดที่ Server" });
 });
 
+
+
+
+app.patch('/api/equipment/:id', (req,res)=>{
+  const id = Number(req.params.id)
+
+  if(isNaN(id)){
+    return res.status(400).json({
+      message: "ต้องระบุ ID ที่จะแก้ไข"
+    })
+  }
+
+  const item = equipment.find(e=>e.id===id)
+
+  if(!item){
+    return res.status(404).json({
+      message: "ไม่พบข้อมูลที่ต้องการแก้ไข"
+    })
+  }
+
+  const body = req.body
+
+  if(body &&
+    Object.hasOwn(body,'name') &&
+    Object.hasOwn(body,'quantity') &&
+    Object.hasOwn(body,'category')){
+
+      item.name = body.name.trim();
+      item.quantity = body.quantity;
+      item.category = body.category.trim();
+
+      return res.status(200).json({
+        message: "แก้ไขข้อมูลแล้ว",
+        data: item
+      })
+
+  }else{
+    return res.status(400).json({
+      message: "ข้อมูลไม่ครบ"
+    })
+  }
+
+})
+
+
+app.delete('/api/equipment/:id', (req,res)=>{
+  const id = Number(req.params.id)
+
+  if(id===null){
+    return res.status(400).json({
+      message: "กรุณาตรวจสอบ ID ที่ต้องการลบ"
+    })
+  }
+
+  const index = equipment.findIndex(e=>e.id===id)
+
+  if(index===-1){
+    return res.status(404).json({
+      message: "ไม่พบ ID ที่ต้องการลบ"
+    })
+  }
+
+  const [deleted] = equipment.splice(index,1)
+
+  res.status(200).json({
+    message: "ลบข้อมูลอุปกรณ์แล้ว"
+  })
+})
+
+
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
